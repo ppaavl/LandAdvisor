@@ -1,12 +1,21 @@
+Soil:
 https://www.getambee.com/api/soil
-https://glama.ai/mcp/servers/@cesarintriago/MCP-Google-Solar-API
 https://soilgrids.org/
-https://www.weatherbit.io/api/weather-energy-forecast           --- pt panouri
+
+Solar:
+https://glama.ai/mcp/servers/@cesarintriago/MCP-Google-Solar-API
+https://www.weatherbit.io/api/weather-energy-forecast          
 https://playbooks.com/mcp/nasa-apis 
 
 MCP 
 https://github.com/PipedreamHQ/pipedream/tree/master/modelcontextprotocol
 https://github.com/rinadelph/Agent-MCP
+https://glama.ai/mcp/servers/@ANSH-RIYAL/MCP-RAG
+
+Geographical:
+https://www.mcpworld.com/en/detail/ce6a89a1b03fdda8b1c587cc56bfd30d?utm_source=chatgpt.com - elevation
+https://github.com/jagan-shanmugam/open-streetmap-mcp?utm_source=chatgpt.com - nearest roads
+https://github.com/inamdarmihir/universal-public-data-mcp-server - posibil pt restricted areas
 
    
 historical weather:
