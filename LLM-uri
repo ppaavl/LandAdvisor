@@ -13,15 +13,17 @@ https://planpros.ai/?utm_source=chatgpt.com
 
 Legal:
 https://github.com/DorobantuDiana/Legal-LLM?utm_source=chatgpt.com
-https://arxiv.org/html/2412.04119v2?utm_source=chatgpt.com
+https://huggingface.co/dianaddx/fine-tuned-saullm-7b-romanian-legal
 https://huggingface.co/AdaptLLM/law-LLM?utm_source=chatgpt.com
 https://github.com/senisioi/rolegal
 https://huggingface.co/snisioi/bert-legal-romanian-cased-v1?utm_source=chatgpt.com
 https://arxiv.org/abs/2501.07721?utm_source=chatgpt.com
+https://huggingface.co/OpenLLM-Ro/RoLlama2-7b-Instruct
+https://github.com/senisioi/rolegal
 
 Financial:
 https://www.bloomberg.com/professional/support/api-library/
-https://bloomberg.github.io/blpapi-docs/?utm_source=chatgpt.com
+https://huggingface.co/AdaptLLM/finance-LLM
 https://github.com/AI4Finance-Foundation/FinGPT
 https://huggingface.co/FinGPT
 https://github.com/AI4Finance-Foundation/FinRobot?utm_source=chatgpt.com
