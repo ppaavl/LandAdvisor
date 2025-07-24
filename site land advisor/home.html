@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LandAdvisor - Home</title>
+  <style>
+    :root {
+      --bg-brown: #977A4B;
+      --yellow: #C3B94B;
+      --text: #1f1f1f;
+      --dark-bg: #1a1a1a;
+      --dark-panel: #2e2e2e;
+      --dark-text: #ffffff;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('background.png') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text);
+      transition: background-color 0.4s, color 0.4s, opacity 0.6s ease;
+    }
+
+    body.dark {
+      background-color: var(--dark-bg);
+      color: var(--dark-text);
+    }
+
+    body.fade-out {
+      opacity: 0;
+    }
+
+    .overlay {
+      width: 100%;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+
+      backdrop-filter: blur(1px); /* 0 SAU 1 DE JUCAT CU ASTA */
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+      
+      animation: fadeIn 1.2s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .logo {
+      width: 120px;
+      margin-bottom: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 20px;
+      max-width: 600px;
+      margin-bottom: 40px;
+    }
+
+    .get-started {
+      padding: 14px 32px;
+      font-size: 18px;
+      background-color: var(--yellow);
+      color: var(--text);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.25s ease;
+      transform: scale(1);
+    }
+
+    .get-started:hover {
+      background-color: #e4d200;
+      transform: scale(1.05);
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: 2px solid #fff;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      font-weight: bold;
+      background-color: rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      background-color: var(--yellow);
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+
+  <div class="overlay">
+    <img src="logo.png" alt="Land Advisor Logo" class="logo">
+    <h1>Welcome to LandAdvisor!</h1>
+    <p>Pick, save and explore your land`s full potential for free</p>
+    <a href="map.html" id="startLink"><button class="get-started">Get Started →</button></a>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const isDark = document.body.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+
+    (function () {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+      }
+    })();
+
+    document.getElementById("startLink").addEventListener("click", function (e) {
+      e.preventDefault();
+      document.body.classList.add("fade-out");
+      setTimeout(() => {
+        window.location.href = this.href;
+      }, 600);
+    });
+  </script>
+</body>
+</html>

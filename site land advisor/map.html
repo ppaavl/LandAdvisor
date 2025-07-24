@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Map Picker</title>
+  <style>
+    :root {
+      /*--bg: #977A4B; 
+      --btn-bg: #F5E103; */
+      --bg: #314D1F;
+      --btn-bg: #C3B94B;
+
+      --text: #1f1f1f;
+      --panel: #fff;
+      --border: #b18c60;
+      --alert: #e53935;
+    }
+
+    body.dark {
+      --bg: #2e2a25;
+      --btn-bg: #f1dc00;
+      --text: #ffffff;
+      --panel: #3a3a3a;
+      --border: #5a4a30;
+      --alert: #ef5350;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      margin: 0;
+      padding: 0;
+      color: var(--text);
+      transition: background-color 0.3s, color 0.3s, opacity 0.6s ease;
+    }
+
+    body.fade-out {
+      opacity: 0;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+
+    .label {
+      font-weight: 600;
+      font-size: 32px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: 2px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text);
+      background-color: var(--panel);
+      font-weight: bold;
+      transition: all 0.2s ease;
+      z-index: 1000;
+    }
+
+    .theme-toggle:hover {
+      background-color: var(--btn-bg);
+      color: var(--text);
+    }
+
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 12px 28px;
+      font-size: 16px;
+      margin: 5px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      background-color: var(--btn-bg);
+      color: var(--text);
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover:enabled {
+      background-color: #e4d200;
+    }
+
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    #map {
+      height: 700px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      border: 2px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    #saved-location {
+      margin: 40px auto 0;
+      padding: 20px;
+      width: 400px;
+      background-color: #C3B94B;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      text-align: center;
+      color: var(--text);
+      font-size: 18px;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      opacity: 0.85;
+    }
+
+    #timer-box {
+      margin: 20px auto 0;
+      padding: 20px;
+      width: 400px;
+      background-color: #c94c4c;
+      border: 2px solid #a03b3b;
+      border-radius: 10px;
+      text-align: center;
+      color: white;
+      font-size: 18px;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      opacity: 0.7;
+    }
+
+    #backLink {
+  text-decoration: none;
+    } 
+    
+    .disabled-map {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      border-top-color: var(--btn-bg);
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .back-home {
+      display: block;
+      margin: 10px auto 20px;
+      background-color: var(--btn-bg);
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 16px;
+      padding: 10px 24px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-home:hover {
+      background-color: #e4d200;
+    }
+
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+  </style>
+</head>
+<body>
+  <div id="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+
+  <div class="container">
+    <div class="label">Google Maps Location Picker </div>
+
+    <div class="controls">
+      <button id="saveBtn" onclick="saveLocation()">Save</button>
+      <button onclick="resetMap()">Reset</button>
+      <span id="savingSpinner" style="display: none;"><div class="spinner"></div></span>
+    </div>
+
+    <div id="map"></div>
+    <div id="saved-location"></div>
+    <div id="timer-box"><div id="timer"></div></div>
+
+    <a href="home.html" id="backLink"><button class="back-home">← Back to Home</button></a>
+  </div>
+
+  <script>
+    let map;
+    let marker = null;
+    let savedLocation = null;
+    let mapClickable = true;
+    let cooldownTimer = null;
+    const cooldownSeconds = 60;
+    let isCooldownActive = false;
+
+    function initMap() {
+      const initialLocation = { lat: 48.8566, lng: 2.3522 };
+
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: initialLocation,
+        zoom: 12,
+      });
+
+      map.addListener("click", (event) => {
+        if (!mapClickable) return;
+
+        const clickedLocation = event.latLng;
+
+        if (marker) {
+          marker.setPosition(clickedLocation);
+          marker.setDraggable(true);
+        } else {
+          marker = new google.maps.Marker({
+            position: clickedLocation,
+            map: map,
+            draggable: true,
+            title: "Selected Location",
+          });
+        }
+
+        savedLocation = null;
+        document.getElementById("saved-location").style.display = "none";
+      });
+
+      document.getElementById("loader").style.display = "none";
+    }
+
+    function saveLocation() {
+      if (!marker) {
+        alert("Please place a marker on the map first.");
+        return;
+      }
+
+      if (isCooldownActive) {
+        alert("Please wait until the timer ends before saving again.");
+        return;
+      }
+
+      const position = marker.getPosition();
+      marker.setDraggable(false);
+      savedLocation = {
+        lat: position.lat(),
+        lng: position.lng(),
+      };
+
+      mapClickable = false;
+      document.getElementById("map").classList.add("disabled-map");
+      document.getElementById("savingSpinner").style.display = "inline-block";
+
+      setTimeout(() => {
+        const outputDiv = document.getElementById("saved-location");
+        outputDiv.innerHTML = `
+          <strong>Saved Location:</strong><br>
+          Latitude: ${savedLocation.lat.toFixed(6)}<br>
+          Longitude: ${savedLocation.lng.toFixed(6)}
+        `;
+        outputDiv.style.display = "block";
+
+        console.log("Location saved:", savedLocation);
+        document.getElementById("savingSpinner").style.display = "none";
+        startCooldown();
+      }, 1000);
+    }
+
+    function startCooldown() {
+      let remaining = cooldownSeconds;
+      const saveBtn = document.getElementById("saveBtn");
+      const timerDisplay = document.getElementById("timer");
+      const timerBox = document.getElementById("timer-box");
+
+      isCooldownActive = true;
+      saveBtn.disabled = true;
+      timerBox.style.display = "block";
+
+      cooldownTimer = setInterval(() => {
+        const minutes = Math.floor(remaining / 60);
+        const seconds = remaining % 60;
+        timerDisplay.textContent = `You can save again in ${minutes}:${seconds.toString().padStart(2, '0')}...`;
+
+        if (--remaining < 0) {
+          clearInterval(cooldownTimer);
+          isCooldownActive = false;
+          saveBtn.disabled = false;
+          timerBox.style.display = "none";
+        }
+      }, 1000);
+    }
+
+    function resetMap() {
+      if (marker) {
+        marker.setMap(null);
+        marker = null;
+      }
+
+      savedLocation = null;
+      mapClickable = true;
+      document.getElementById("map").classList.remove("disabled-map");
+      document.getElementById("saved-location").style.display = "none";
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.classList.toggle("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    }
+
+    (function () {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+      }
+    })();
+
+    document.getElementById("backLink").addEventListener("click", function (e) {
+      e.preventDefault();
+      document.body.classList.add("fade-out");
+      setTimeout(() => {
+        window.location.href = this.href;
+      }, 600);
+    });
+  </script>
+
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4Yr1JAhHD-NsORYgdKdrRofnRWSFBh7o&callback=initMap"></script>
+</body>
+</html>
